@@ -51,25 +51,25 @@ export default function LearnPage() {
           </div>
         )}
 
+        <div className="flex justify-between mb-8">
+          {prev ? (
+            <Link to={`/learn/${prev.id}`} className="flex items-center gap-2 text-sm font-mono font-semibold px-4 py-2.5 rounded-lg bg-terminal text-primary-foreground hover:bg-terminal/90 transition-colors">
+              <ArrowLeft className="w-4 h-4" /> {prev.title}
+            </Link>
+          ) : <div />}
+          {next ? (
+            <Link to={`/learn/${next.id}`} className="flex items-center gap-2 text-sm font-mono font-semibold px-4 py-2.5 rounded-lg bg-terminal text-primary-foreground hover:bg-terminal/90 transition-colors">
+              {next.title} <ArrowRight className="w-4 h-4" />
+            </Link>
+          ) : <div />}
+        </div>
+
         <details className="bg-card border border-border rounded-xl p-4 mb-8">
           <summary className="text-sm font-bold text-foreground cursor-pointer font-mono">
             🎓 Trainer Debrief Notes
           </summary>
           <p className="text-sm text-muted-foreground mt-3 whitespace-pre-line leading-relaxed">{page.trainerNotes}</p>
         </details>
-
-        <div className="flex justify-between pt-4 border-t border-border">
-          {prev ? (
-            <Link to={`/learn/${prev.id}`} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-terminal">
-              <ArrowLeft className="w-3 h-3" /> {prev.title}
-            </Link>
-          ) : <div />}
-          {next ? (
-            <Link to={`/learn/${next.id}`} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-terminal">
-              {next.title} <ArrowRight className="w-3 h-3" />
-            </Link>
-          ) : <div />}
-        </div>
       </div>
     </SiteLayout>
   );
