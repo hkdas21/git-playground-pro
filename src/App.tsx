@@ -3,8 +3,14 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Index from "./pages/Index.tsx";
-import NotFound from "./pages/NotFound.tsx";
+import Index from "./pages/Index";
+import Learn from "./pages/Learn";
+import LearnPage from "./pages/LearnPage";
+import PlayPage from "./pages/Play";
+import WidgetPage from "./pages/WidgetPage";
+import Teach from "./pages/Teach";
+import Progress from "./pages/Progress";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
@@ -16,7 +22,12 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/learn" element={<Learn />} />
+          <Route path="/learn/:pageId" element={<LearnPage />} />
+          <Route path="/play" element={<PlayPage />} />
+          <Route path="/play/:widgetId" element={<WidgetPage />} />
+          <Route path="/teach" element={<Teach />} />
+          <Route path="/progress" element={<Progress />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
