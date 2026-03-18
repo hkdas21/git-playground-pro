@@ -85,6 +85,7 @@ export class GitEngine {
       if (this.isIgnored(path)) continue;
       if (!this.index.has(path)) {
         untracked.push(path);
+      } else if (this.index.get(path) !== content) {
         modified.push(path);
       }
     }
