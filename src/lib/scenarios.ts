@@ -203,6 +203,14 @@ export const scenarios: Scenario[] = [
     preScript: ['git init', 'git add .', 'git commit -m "docs: basic pancake recipe"'],
     allowedCommands: ['status', 'branch', 'switch', 'add', 'commit', 'merge', 'log', 'diff'],
     goalDescription: 'Create a branch called "feature/toppings", add a Toppings section to recipe.md, commit it, switch back to main, and merge the branch in.',
+    conceptSummary: 'Branches are parallel timelines for your code. You create a branch to work on a feature without affecting the main code. When the feature is ready, you merge it back. Branches are lightweight in Git — just pointers to commits — so use them freely!',
+    instructions: [
+      'Create and switch to a new branch: git switch -c feature/toppings',
+      'Edit recipe.md — add a "## Toppings" section with some items at the bottom',
+      'Stage and commit your changes on the feature branch',
+      'Switch back to main: git switch main (notice toppings disappear!)',
+      'Merge the feature in: git merge feature/toppings',
+    ],
     successChecks: [
       { type: 'branchExists', name: 'feature/toppings' },
       { type: 'commitCount', min: 3 },
