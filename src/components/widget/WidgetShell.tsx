@@ -89,6 +89,7 @@ export function WidgetShell({ scenarioId, showTrainerControls = false }: WidgetS
       const success = checkSuccess(eng, s.successChecks);
       if (success && !goalAchieved) {
         setGoalAchieved(true);
+        markCompleted(scenarioId, timer);
         setHistory(h => [...h, { type: 'success', content: '🎉 Goal achieved! Great job!' }]);
         setShowDebrief(true);
       }
