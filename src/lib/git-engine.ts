@@ -33,6 +33,7 @@ export class GitEngine {
   private initialized = false;
   private _conflictFiles = new Set<string>();
   private allowedCommands: string[];
+  private stashStack: Array<{ working: Map<string, string>; index: Map<string, string> }> = [];
 
   private static blockedPatterns = [
     /reset\s+--hard/, /rebase/, /cherry-pick/,
@@ -81,6 +82,7 @@ export class GitEngine {
       if (!this.index.has(path)) staged.push(path);
     }
     for (const [path, content] of this.workingDir) {
+      if (this.isIgnored(path)) continue;
       if (!this.index.has(path)) {
         untracked.push(path);
       } else if (this.index.get(path) !== content) {
@@ -132,10 +134,28 @@ export class GitEngine {
     return { success: true, output: out, type: 'info' };
   }
 
+  private getIgnorePatterns(): string[] {
+    const gitignore = this.workingDir.get('.gitignore');
+    if (!gitignore) return [];
+    return gitignore.split('\n')
+      .map(l => l.trim())
+      .filter(l => l && !l.startsWith('#'));
+  }
+
+  private isIgnored(path: string): boolean {
+    const patterns = this.getIgnorePatterns();
+    for (const pattern of patterns) {
+      const clean = pattern.replace(/\/$/, '');
+      if (path === clean || path.startsWith(clean + '/') || path === pattern) return true;
+    }
+    return false;
+  }
+
   private addCmd(args: string[]): CommandResult {
     if (!args.length || args[0] === '.') {
       let count = 0;
       for (const [path, content] of this.workingDir) {
+        if (this.isIgnored(path)) continue;
         if (!this.index.has(path) || this.index.get(path) !== content) {
           this.index.set(path, content);
           this._conflictFiles.delete(path);
@@ -145,6 +165,7 @@ export class GitEngine {
       return { success: true, output: count ? `Added ${count} file(s) to staging area.` : 'Nothing to add.', type: count ? 'success' : 'info' };
     }
     const path = args[0];
+    if (this.isIgnored(path)) return { success: false, output: `The following paths are ignored by one of your .gitignore files:\n${path}`, type: 'error' };
     const content = this.workingDir.get(path);
     if (content === undefined) return { success: false, output: `fatal: pathspec '${path}' did not match any files`, type: 'error' };
     this.index.set(path, content);
@@ -342,6 +363,48 @@ export class GitEngine {
     return { success: false, output: `error: pathspec '${path}' did not match any file(s)`, type: 'error' };
   }
 
+  private stashCmd(args: string[]): CommandResult {
+    if (!args.length || args[0] === 'push') {
+      // Save current working state
+      const headSnap = this.getSnapshot();
+      const hasChanges = [...this.workingDir].some(([p, c]) => {
+        const committed = headSnap[p];
+        return committed !== c;
+      }) || [...this.index].some(([p, c]) => !(p in headSnap) || headSnap[p] !== c);
+
+      if (!hasChanges) return { success: false, output: 'No local changes to save', type: 'info' };
+
+      this.stashStack.push({
+        working: new Map(this.workingDir),
+        index: new Map(this.index),
+      });
+
+      // Restore to HEAD state
+      this.workingDir.clear();
+      this.index.clear();
+      for (const [p, c] of Object.entries(headSnap)) {
+        this.workingDir.set(p, c);
+        this.index.set(p, c);
+      }
+      return { success: true, output: `Saved working directory and index state WIP on ${this._head}\nHEAD is now at ${this.branches.get(this._head) || '(none)'}`, type: 'success' };
+    }
+
+    if (args[0] === 'pop') {
+      if (this.stashStack.length === 0) return { success: false, output: 'No stash entries found.', type: 'error' };
+      const stash = this.stashStack.pop()!;
+      this.workingDir = stash.working;
+      this.index = stash.index;
+      return { success: true, output: `Dropped refs/stash@{0}\nRestored working directory and index.`, type: 'success' };
+    }
+
+    if (args[0] === 'list') {
+      if (this.stashStack.length === 0) return { success: true, output: 'No stash entries.', type: 'info' };
+      return { success: true, output: this.stashStack.map((_, i) => `stash@{${i}}: WIP`).join('\n'), type: 'info' };
+    }
+
+    return { success: false, output: 'Usage: git stash [push|pop|list]', type: 'error' };
+  }
+
   executeCommand(input: string): CommandResult {
     const trimmed = input.trim();
     if (!trimmed) return { success: true, output: '', type: 'info' };
@@ -374,6 +437,7 @@ export class GitEngine {
       case 'switch': return this.switchCmd(subArgs);
       case 'merge': return this.mergeCmd(subArgs);
       case 'restore': return this.restoreCmd(subArgs);
+      case 'stash': return this.stashCmd(subArgs);
       default: return { success: false, output: `git: '${sub}' is not a git command.`, type: 'error' };
     }
   }

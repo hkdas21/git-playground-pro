@@ -10,6 +10,8 @@ import PlayPage from "./pages/Play";
 import WidgetPage from "./pages/WidgetPage";
 import Teach from "./pages/Teach";
 import Progress from "./pages/Progress";
+import CheatSheet from "./pages/CheatSheet";
+import QuizPage from "./pages/Quiz";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +30,8 @@ const App = () => (
           <Route path="/play/:widgetId" element={<WidgetPage />} />
           <Route path="/teach" element={<Teach />} />
           <Route path="/progress" element={<Progress />} />
+          <Route path="/cheatsheet" element={<CheatSheet />} />
+          <Route path="/quiz" element={<QuizPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
