@@ -33,6 +33,7 @@ export class GitEngine {
   private initialized = false;
   private _conflictFiles = new Set<string>();
   private allowedCommands: string[];
+  private stashStack: Array<{ working: Map<string, string>; index: Map<string, string> }> = [];
 
   private static blockedPatterns = [
     /reset\s+--hard/, /rebase/, /cherry-pick/,
