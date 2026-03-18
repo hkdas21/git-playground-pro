@@ -173,8 +173,23 @@ export function WidgetShell({ scenarioId, showTrainerControls = false }: WidgetS
         {/* File Explorer + Editor */}
         <div className="flex flex-col gap-1.5 min-h-0 overflow-hidden">
           <div className="bg-card rounded-lg border border-border overflow-hidden shrink-0">
-            <div className="px-2 py-1.5 border-b border-border">
+            <div className="px-2 py-1.5 border-b border-border flex items-center justify-between">
               <span className="text-[10px] text-muted-foreground font-mono uppercase tracking-wider">Files</span>
+              <button
+                onClick={() => {
+                  const name = prompt('File name (e.g. .gitignore):');
+                  if (name && engineRef.current) {
+                    engineRef.current.writeFile(name, '');
+                    setSelectedFile(name);
+                    setFileContent('');
+                    setTick(t => t + 1);
+                  }
+                }}
+                className="text-muted-foreground hover:text-terminal transition-colors"
+                title="New file"
+              >
+                <FilePlus className="w-3 h-3" />
+              </button>
             </div>
             <div className="p-1 space-y-0.5 max-h-[120px] overflow-y-auto">
               {files.map(f => (
