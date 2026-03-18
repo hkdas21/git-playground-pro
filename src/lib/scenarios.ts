@@ -250,6 +250,15 @@ export const scenarios: Scenario[] = [
     ],
     allowedCommands: ['status', 'merge', 'add', 'commit', 'diff', 'log'],
     goalDescription: 'Merge feature/chef-alice into main. You\'ll hit a conflict because both chefs changed the menu! Open menu.txt, pick the dishes you want (remove the <<<, ===, >>> markers), then stage and commit.',
+    conceptSummary: 'Merge conflicts happen when two branches change the same lines. Git can\'t decide which version to keep, so it marks the conflict and asks you to resolve it. Conflicts are NOT errors — they\'re just Git asking for your help. Stay calm and edit the file!',
+    instructions: [
+      'Run "git merge feature/chef-alice" — this will trigger a conflict',
+      'Run "git status" to see which files are conflicted',
+      'Click menu.txt — look for <<<<<<< HEAD and >>>>>>> markers',
+      'Edit the file: pick the dishes you want, delete ALL conflict markers',
+      'Save, then stage: git add menu.txt',
+      'Finish the merge: git commit -m "fix: resolve menu conflict"',
+    ],
     successChecks: [
       { type: 'commitCount', min: 4 },
       { type: 'currentBranch', name: 'main' },
