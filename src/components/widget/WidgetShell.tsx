@@ -1,7 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { markCompleted } from '@/lib/progress';
 import { GitEngine } from '@/lib/git-engine';
-import { GitEngine } from '@/lib/git-engine';
 import { scenarios, checkSuccess } from '@/lib/scenarios';
 import { Terminal, TerminalEntry } from './Terminal';
 import { CommitGraph } from './CommitGraph';
