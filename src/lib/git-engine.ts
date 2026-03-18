@@ -133,10 +133,28 @@ export class GitEngine {
     return { success: true, output: out, type: 'info' };
   }
 
+  private getIgnorePatterns(): string[] {
+    const gitignore = this.workingDir.get('.gitignore');
+    if (!gitignore) return [];
+    return gitignore.split('\n')
+      .map(l => l.trim())
+      .filter(l => l && !l.startsWith('#'));
+  }
+
+  private isIgnored(path: string): boolean {
+    const patterns = this.getIgnorePatterns();
+    for (const pattern of patterns) {
+      const clean = pattern.replace(/\/$/, '');
+      if (path === clean || path.startsWith(clean + '/') || path === pattern) return true;
+    }
+    return false;
+  }
+
   private addCmd(args: string[]): CommandResult {
     if (!args.length || args[0] === '.') {
       let count = 0;
       for (const [path, content] of this.workingDir) {
+        if (this.isIgnored(path)) continue;
         if (!this.index.has(path) || this.index.get(path) !== content) {
           this.index.set(path, content);
           this._conflictFiles.delete(path);
@@ -146,6 +164,7 @@ export class GitEngine {
       return { success: true, output: count ? `Added ${count} file(s) to staging area.` : 'Nothing to add.', type: count ? 'success' : 'info' };
     }
     const path = args[0];
+    if (this.isIgnored(path)) return { success: false, output: `The following paths are ignored by one of your .gitignore files:\n${path}`, type: 'error' };
     const content = this.workingDir.get(path);
     if (content === undefined) return { success: false, output: `fatal: pathspec '${path}' did not match any files`, type: 'error' };
     this.index.set(path, content);
