@@ -290,6 +290,15 @@ export const scenarios: Scenario[] = [
     preScript: ['git init', 'git add .', 'git commit -m "chore: initial settings"'],
     allowedCommands: ['status', 'diff', 'add', 'restore', 'commit'],
     goalDescription: 'Practice the undo cycle: 1) Edit settings.yaml (change theme to dark), 2) Stage it with git add, 3) Unstage it with git restore --staged settings.yaml, 4) Discard the change with git restore settings.yaml. End with a clean working tree.',
+    conceptSummary: 'Everyone makes mistakes — Git gives you safe undo commands. "git restore" discards working directory changes, and "git restore --staged" unstages files without losing your edits. These are the safe undo tools every developer should know.',
+    instructions: [
+      'Open settings.yaml and change "theme: light" to "theme: dark". Save.',
+      'Run "git status" to see it\'s modified (red)',
+      'Stage it: git add settings.yaml (now it\'s green/staged)',
+      'Unstage it: git restore --staged settings.yaml (back to red)',
+      'Discard the change: git restore settings.yaml',
+      'Run "git status" — working tree should be clean!',
+    ],
     successChecks: [{ type: 'clean', value: true }],
     hints: [
       { text: 'Open settings.yaml and change "theme: light" to "theme: dark". Save.', delay: 5 },
