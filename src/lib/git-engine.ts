@@ -82,9 +82,9 @@ export class GitEngine {
       if (!this.index.has(path)) staged.push(path);
     }
     for (const [path, content] of this.workingDir) {
+      if (this.isIgnored(path)) continue;
       if (!this.index.has(path)) {
         untracked.push(path);
-      } else if (this.index.get(path) !== content) {
         modified.push(path);
       }
     }
