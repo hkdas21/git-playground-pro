@@ -50,6 +50,15 @@ export const scenarios: Scenario[] = [
     preScript: ['git init', 'git add .', 'git commit -m "chore: scaffold website"'],
     allowedCommands: ['status', 'diff', 'add', 'commit', 'log'],
     goalDescription: 'Change the <h1> in index.html to say "Hello Git" instead of "Hello World", then stage and commit your change.',
+    conceptSummary: 'Git tracks your code in 3 places: Working Directory (where you edit), Staging Area (where you prepare changes), and Repository (where snapshots are saved). This activity walks you through that entire flow — edit, stage, commit.',
+    instructions: [
+      'Click on index.html in the file list to open it in the editor',
+      'Change the heading from "Hello World" to "Hello Git" and click Save',
+      'Run "git status" to see that index.html is now modified',
+      'Run "git diff" to see exactly what changed (old vs new)',
+      'Run "git add ." to move your change to the staging area',
+      'Run "git commit -m \\"feat: update heading\\"" to save the snapshot',
+    ],
     successChecks: [
       { type: 'fileContent', path: 'index.html', contains: 'Hello Git' },
       { type: 'commitCount', min: 2 },
