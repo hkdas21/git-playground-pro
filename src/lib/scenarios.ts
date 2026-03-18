@@ -421,6 +421,14 @@ export const scenarios: Scenario[] = [
     ] as PreScriptStep[],
     allowedCommands: ['log', 'branch', 'switch', 'status', 'add', 'commit', 'diff'],
     goalDescription: 'Use "git log --oneline" to explore the commit history. Then create a new branch called "feature/v1.3" from the current state and add a v1.3 section to notes.md with at least one bullet point. Commit your changes.',
+    conceptSummary: 'Git log is your time machine — it shows every commit ever made, with who made it and when. The --oneline flag gives a compact view. Good commit messages make the log a useful project diary; bad ones make it useless.',
+    instructions: [
+      'Run "git log --oneline" to see all commits in a compact format',
+      'Read the history: notice how each commit tells a story of the project',
+      'Create a feature branch: git switch -c feature/v1.3',
+      'Edit notes.md — add a "## v1.3" section with at least one bullet point',
+      'Stage and commit: git add . then git commit -m "docs: add v1.3 release notes"',
+    ],
     successChecks: [
       { type: 'branchExists' as const, name: 'feature/v1.3' },
       { type: 'fileContent' as const, path: 'notes.md', contains: 'v1.3' },
