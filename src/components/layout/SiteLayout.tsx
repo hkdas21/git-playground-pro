@@ -1,10 +1,12 @@
 import { Link, useLocation } from 'react-router-dom';
-import { GitBranch, BookOpen, Play, Users, Trophy, Menu, X } from 'lucide-react';
+import { GitBranch, BookOpen, Play, Users, Trophy, Menu, X, FileText, HelpCircle } from 'lucide-react';
 import { useState } from 'react';
 
 const navItems = [
   { path: '/learn', label: 'Learn', icon: BookOpen },
   { path: '/play', label: 'Play', icon: Play },
+  { path: '/quiz', label: 'Quiz', icon: HelpCircle },
+  { path: '/cheatsheet', label: 'Cheat Sheet', icon: FileText },
   { path: '/teach', label: 'Teach', icon: Users },
   { path: '/progress', label: 'Progress', icon: Trophy },
 ];

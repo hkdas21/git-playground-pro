@@ -247,6 +247,113 @@ export const scenarios: Scenario[] = [
     ],
     debrief: '✨ Safe undo commands:\n\n🔄 git restore <file>\n   → Discards changes in working directory (reverts to staged/committed version)\n\n📤 git restore --staged <file>\n   → Unstages a file (keeps the changes in your working directory)\n\n⚠️ AVOID in beginner mode:\n   git reset --hard — destructive, can lose work\n   git rebase — rewrites history\n\nRemember: restore is safe. You can always undo your undo!',
   },
+
+  // ── Widget 8: Gitignore Guardian ───────────────────────────────
+  {
+    id: 'gitignore-guardian',
+    title: 'Gitignore Guardian',
+    subtitle: 'Protect secrets, ignore junk',
+    description: 'Learn to use .gitignore to keep sensitive files and dependencies out of your repo.',
+    difficulty: 'beginner' as const,
+    timebox: 300,
+    seedFiles: {
+      'app.js': 'const express = require("express");\nconst app = express();\napp.listen(3000);\n',
+      'node_modules/lib.js': '// third-party library code\nmodule.exports = {};\n',
+      '.env': 'API_KEY=super_secret_key_12345\nDB_PASSWORD=hunter2\n',
+    },
+    preScript: ['git init'] as PreScriptStep[],
+    allowedCommands: ['status', 'add', 'commit', 'diff', 'log'],
+    goalDescription: 'Create a .gitignore file that excludes node_modules/ and .env, then stage and commit only the safe files (app.js and .gitignore).',
+    successChecks: [
+      { type: 'commitCount' as const, min: 1 },
+      { type: 'fileExists' as const, path: '.gitignore' },
+      { type: 'fileContent' as const, path: '.gitignore', contains: 'node_modules' },
+      { type: 'fileContent' as const, path: '.gitignore', contains: '.env' },
+    ],
+    hints: [
+      { text: 'First, run "git status" to see ALL files — including the dangerous ones', delay: 5 },
+      { text: 'Click "+ New File" or use the file list — create a file called ".gitignore"', delay: 15 },
+      { text: 'In .gitignore, type:\nnode_modules/\n.env\nThen click Save', delay: 30 },
+      { text: 'Run "git status" again — node_modules/ and .env should be gone!', delay: 45 },
+      { text: 'Now run "git add ." — only safe files get staged', delay: 55 },
+      { text: 'Commit: git commit -m "chore: add gitignore, init project"', delay: 65 },
+    ],
+    debrief: '🛡️ .gitignore protects your repo!\n\nCommon patterns to ignore:\n• node_modules/ — dependencies (reinstall with npm install)\n• .env — secrets & API keys\n• dist/ or build/ — generated files\n• .DS_Store — macOS junk\n• *.log — log files\n\n⚠️ NEVER commit secrets! Once pushed to GitHub, they\'re in the history forever.\n\nPro tip: Use gitignore.io to generate templates for any language/framework.',
+  },
+
+  // ── Widget 9: Stash & Switch ───────────────────────────────────
+  {
+    id: 'stash-switch',
+    title: 'Stash & Switch',
+    subtitle: 'Save work-in-progress and context-switch',
+    description: 'Learn to temporarily shelve changes with git stash so you can switch branches for a hotfix.',
+    difficulty: 'intermediate' as const,
+    timebox: 360,
+    seedFiles: {
+      'app.js': 'function greet(name) {\n  return "Hello, " + name;\n}\n\nmodule.exports = { greet };\n',
+    },
+    preScript: [
+      'git init', 'git add .', 'git commit -m "feat: initial greeting function"',
+    ] as PreScriptStep[],
+    allowedCommands: ['status', 'add', 'commit', 'stash', 'switch', 'branch', 'diff', 'log'],
+    goalDescription: '1) Edit app.js to add a farewell function (don\'t commit yet). 2) Stash your changes. 3) Create and switch to "hotfix/typo", fix the greeting, commit. 4) Switch back to main. 5) Pop your stash to get your work back.',
+    successChecks: [
+      { type: 'branchExists' as const, name: 'hotfix/typo' },
+      { type: 'commitCount' as const, min: 2 },
+      { type: 'currentBranch' as const, name: 'main' },
+      { type: 'fileContent' as const, path: 'app.js', contains: 'farewell' },
+    ],
+    hints: [
+      { text: 'Edit app.js — add:\nfunction farewell(name) {\n  return "Goodbye, " + name;\n}\nSave but do NOT commit.', delay: 5 },
+      { text: 'Run "git stash" — your changes are saved and the file reverts to the last commit', delay: 20 },
+      { text: 'git switch -c hotfix/typo — create and switch to the hotfix branch', delay: 35 },
+      { text: 'Edit app.js — change "Hello" to "Hi". Stage and commit: git add . && git commit -m "fix: shorten greeting"', delay: 50 },
+      { text: 'Switch back: git switch main', delay: 65 },
+      { text: 'Bring your work back: git stash pop — the farewell function reappears!', delay: 80 },
+    ],
+    debrief: '📦 Git stash = your work-in-progress shelf!\n\n• git stash — save changes, clean working directory\n• git stash pop — re-apply the most recent stash\n• git stash list — see all stashed entries\n\nWhen to use stash:\n✅ Need to switch branches but have uncommitted work\n✅ Want to pull latest changes on a clean tree\n✅ Quick context switch for a hotfix\n\n💡 Stash is a stack (LIFO) — the most recent stash pops first.',
+  },
+
+  // ── Widget 10: Log Detective ───────────────────────────────────
+  {
+    id: 'log-detective',
+    title: 'Log Detective',
+    subtitle: 'Navigate history like a pro',
+    description: 'Explore a repo\'s commit history using git log and create branches from the right place.',
+    difficulty: 'intermediate' as const,
+    timebox: 300,
+    seedFiles: {
+      'notes.md': '# Project Notes\n\n## v1.0\n- Initial release\n\n## v1.1\n- Added dark mode\n- Fixed login bug\n\n## v1.2\n- Performance improvements\n- Added search feature\n',
+    },
+    preScript: [
+      'git init',
+      { write: 'notes.md', content: '# Project Notes\n' },
+      'git add .', 'git commit -m "docs: create project notes"',
+      { write: 'notes.md', content: '# Project Notes\n\n## v1.0\n- Initial release\n' },
+      'git add .', 'git commit -m "docs: add v1.0 release notes"',
+      { write: 'notes.md', content: '# Project Notes\n\n## v1.0\n- Initial release\n\n## v1.1\n- Added dark mode\n- Fixed login bug\n' },
+      'git add .', 'git commit -m "docs: add v1.1 release notes"',
+      { write: 'readme.md', content: '# My Project\nA cool project.\n' },
+      'git add .', 'git commit -m "docs: add README"',
+      { write: 'notes.md', content: '# Project Notes\n\n## v1.0\n- Initial release\n\n## v1.1\n- Added dark mode\n- Fixed login bug\n\n## v1.2\n- Performance improvements\n- Added search feature\n' },
+      'git add .', 'git commit -m "docs: add v1.2 release notes"',
+    ] as PreScriptStep[],
+    allowedCommands: ['log', 'branch', 'switch', 'status', 'add', 'commit', 'diff'],
+    goalDescription: 'Use "git log --oneline" to explore the commit history. Then create a new branch called "feature/v1.3" from the current state and add a v1.3 section to notes.md with at least one bullet point. Commit your changes.',
+    successChecks: [
+      { type: 'branchExists' as const, name: 'feature/v1.3' },
+      { type: 'fileContent' as const, path: 'notes.md', contains: 'v1.3' },
+      { type: 'commitCount' as const, min: 6 },
+    ],
+    hints: [
+      { text: 'Start with "git log --oneline" to see all commits in a compact format', delay: 5 },
+      { text: 'Notice the history: notes → v1.0 → v1.1 → README → v1.2', delay: 20 },
+      { text: 'Create your feature branch: git switch -c feature/v1.3', delay: 35 },
+      { text: 'Edit notes.md — add:\n## v1.3\n- Added notifications\nSave the file.', delay: 50 },
+      { text: 'Stage and commit: git add . && git commit -m "docs: add v1.3 release notes"', delay: 65 },
+    ],
+    debrief: '🔍 Git log is your time machine!\n\n• git log — full commit details\n• git log --oneline — compact view (hash + message)\n\nEach commit is a snapshot of your entire project at that point in time.\n\n💡 Good commit messages make log useful:\n  "docs: add v1.2 release notes" → you know exactly what changed\n  "update file" → useless in a log of 100 commits\n\nThe log + branches together let you navigate any project\'s history like a detective.',
+  },
 ];
 
 export function checkSuccess(engine: GitEngine, checks: SuccessCheck[]): boolean {
