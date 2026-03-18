@@ -6,6 +6,7 @@ import { Terminal, TerminalEntry } from './Terminal';
 import { CommitGraph } from './CommitGraph';
 import { Pipeline } from './Pipeline';
 import { RotateCcw, Lightbulb, Pause, Play, Clock, Trophy, FilePlus } from 'lucide-react';
+import { InstructionsPanel } from './InstructionsPanel';
 
 interface WidgetShellProps {
   scenarioId: string;
