@@ -127,6 +127,14 @@ export const scenarios: Scenario[] = [
     preScript: ['git init', 'git add .', 'git commit -m "feat: initial photo gallery"'],
     allowedCommands: ['status', 'diff', 'add', 'commit', 'log', 'restore'],
     goalDescription: 'Create a messy situation: 1) Edit gallery.html to add a third photo, 2) Edit styles.css to change the gap, 3) Stage ONLY gallery.html (not styles.css), 4) Run git status and read the output — you should see staged, unstaged, and committed files all at once. Then commit just gallery.html.',
+    conceptSummary: 'The "git status" command is your dashboard — it shows which files are staged (green), modified but unstaged (red), and untracked (new). Learning to read status output is essential for selective staging and understanding where your files are in the Git pipeline.',
+    instructions: [
+      'Click gallery.html and add a third photo: <img src="photo3.jpg" alt="Lake" />',
+      'Click styles.css and change gap: 10px to gap: 20px. Save both files.',
+      'Stage ONLY gallery.html: run "git add gallery.html" (not "git add .")',
+      'Run "git status" — gallery.html should be green, styles.css should be red',
+      'Commit just the staged file: git commit -m "feat: add lake photo"',
+    ],
     successChecks: [
       { type: 'commitCount', min: 2 },
       { type: 'fileContent', path: 'gallery.html', contains: 'photo3' },
