@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { markCompleted } from '@/lib/progress';
 import { GitEngine } from '@/lib/git-engine';
 import { scenarios, checkSuccess } from '@/lib/scenarios';
 import { Terminal, TerminalEntry } from './Terminal';
@@ -88,6 +89,7 @@ export function WidgetShell({ scenarioId, showTrainerControls = false }: WidgetS
       const success = checkSuccess(eng, s.successChecks);
       if (success && !goalAchieved) {
         setGoalAchieved(true);
+        markCompleted(scenarioId, timer);
         setHistory(h => [...h, { type: 'success', content: '🎉 Goal achieved! Great job!' }]);
         setShowDebrief(true);
       }
