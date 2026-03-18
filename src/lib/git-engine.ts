@@ -379,10 +379,13 @@ export class GitEngine {
   }
 
   runPreScript(steps: PreScriptStep[]): void {
+    const saved = this.allowedCommands;
+    this.allowedCommands = []; // bypass restrictions during setup
     for (const step of steps) {
       if (typeof step === 'string') this.executeCommand(step);
       else this.writeFile(step.write, step.content);
     }
+    this.allowedCommands = saved;
   }
 
   reset(): void {
