@@ -88,6 +88,15 @@ export const scenarios: Scenario[] = [
     preScript: ['git init', 'git add .', 'git commit -m "docs: create project TODO list"'],
     allowedCommands: ['status', 'diff', 'add', 'commit', 'log'],
     goalDescription: 'Check off "Add user login page" (change [ ] to [x]) and add a new TODO item. Commit with a clear, specific message describing what you changed.',
+    conceptSummary: 'Good commit messages tell the story of your project. They use a type prefix (feat:, fix:, docs:), imperative mood, and describe specifically what changed. Vague messages like "update file" make your project history useless.',
+    instructions: [
+      'Click todo.md to open it in the editor',
+      'Change "- [ ] Add user login page" to "- [x] Add user login page"',
+      'Add a new TODO item (e.g. "- [ ] Deploy to production")',
+      'Click Save, then run "git diff" to review your changes',
+      'Stage with "git add ." and commit with a clear, specific message',
+      'Use a type prefix like: git commit -m "docs: mark login done, add deploy task"',
+    ],
     successChecks: [
       { type: 'commitCount', min: 2 },
       { type: 'fileContent', path: 'todo.md', contains: '[x] Add user login page' },
