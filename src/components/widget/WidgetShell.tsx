@@ -6,6 +6,7 @@ import { Terminal, TerminalEntry } from './Terminal';
 import { CommitGraph } from './CommitGraph';
 import { Pipeline } from './Pipeline';
 import { RotateCcw, Lightbulb, Pause, Play, Clock, Trophy, FilePlus } from 'lucide-react';
+import { InstructionsPanel } from './InstructionsPanel';
 
 interface WidgetShellProps {
   scenarioId: string;
@@ -168,9 +169,11 @@ export function WidgetShell({ scenarioId, showTrainerControls = false }: WidgetS
       </div>
 
       {/* Main area */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-[180px_1fr_240px] gap-1.5 p-1.5 min-h-0">
-        {/* File Explorer + Editor */}
-        <div className="flex flex-col gap-1.5 min-h-0 overflow-hidden">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-[200px_1fr_240px] gap-1.5 p-1.5 min-h-0">
+        {/* File Explorer + Instructions + Editor */}
+        <div className="flex flex-col gap-1.5 min-h-0 overflow-hidden overflow-y-auto scrollbar-thin">
+          {/* Instructions Panel */}
+          <InstructionsPanel scenario={scenario} />
           <div className="bg-card rounded-lg border border-border overflow-hidden shrink-0">
             <div className="px-2 py-1.5 border-b border-border flex items-center justify-between">
               <span className="text-[10px] text-muted-foreground font-mono uppercase tracking-wider">Files</span>

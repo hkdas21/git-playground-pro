@@ -30,6 +30,8 @@ export interface Scenario {
   hints: Hint[];
   debrief: string;
   goalDescription: string;
+  conceptSummary: string;
+  instructions: string[];
 }
 
 export const scenarios: Scenario[] = [
@@ -48,6 +50,15 @@ export const scenarios: Scenario[] = [
     preScript: ['git init', 'git add .', 'git commit -m "chore: scaffold website"'],
     allowedCommands: ['status', 'diff', 'add', 'commit', 'log'],
     goalDescription: 'Change the <h1> in index.html to say "Hello Git" instead of "Hello World", then stage and commit your change.',
+    conceptSummary: 'Git tracks your code in 3 places: Working Directory (where you edit), Staging Area (where you prepare changes), and Repository (where snapshots are saved). This activity walks you through that entire flow — edit, stage, commit.',
+    instructions: [
+      'Click on index.html in the file list to open it in the editor',
+      'Change the heading from "Hello World" to "Hello Git" and click Save',
+      'Run "git status" to see that index.html is now modified',
+      'Run "git diff" to see exactly what changed (old vs new)',
+      'Run "git add ." to move your change to the staging area',
+      'Run "git commit -m \\"feat: update heading\\"" to save the snapshot',
+    ],
     successChecks: [
       { type: 'fileContent', path: 'index.html', contains: 'Hello Git' },
       { type: 'commitCount', min: 2 },
@@ -77,6 +88,15 @@ export const scenarios: Scenario[] = [
     preScript: ['git init', 'git add .', 'git commit -m "docs: create project TODO list"'],
     allowedCommands: ['status', 'diff', 'add', 'commit', 'log'],
     goalDescription: 'Check off "Add user login page" (change [ ] to [x]) and add a new TODO item. Commit with a clear, specific message describing what you changed.',
+    conceptSummary: 'Good commit messages tell the story of your project. They use a type prefix (feat:, fix:, docs:), imperative mood, and describe specifically what changed. Vague messages like "update file" make your project history useless.',
+    instructions: [
+      'Click todo.md to open it in the editor',
+      'Change "- [ ] Add user login page" to "- [x] Add user login page"',
+      'Add a new TODO item (e.g. "- [ ] Deploy to production")',
+      'Click Save, then run "git diff" to review your changes',
+      'Stage with "git add ." and commit with a clear, specific message',
+      'Use a type prefix like: git commit -m "docs: mark login done, add deploy task"',
+    ],
     successChecks: [
       { type: 'commitCount', min: 2 },
       { type: 'fileContent', path: 'todo.md', contains: '[x] Add user login page' },
@@ -107,6 +127,14 @@ export const scenarios: Scenario[] = [
     preScript: ['git init', 'git add .', 'git commit -m "feat: initial photo gallery"'],
     allowedCommands: ['status', 'diff', 'add', 'commit', 'log', 'restore'],
     goalDescription: 'Create a messy situation: 1) Edit gallery.html to add a third photo, 2) Edit styles.css to change the gap, 3) Stage ONLY gallery.html (not styles.css), 4) Run git status and read the output — you should see staged, unstaged, and committed files all at once. Then commit just gallery.html.',
+    conceptSummary: 'The "git status" command is your dashboard — it shows which files are staged (green), modified but unstaged (red), and untracked (new). Learning to read status output is essential for selective staging and understanding where your files are in the Git pipeline.',
+    instructions: [
+      'Click gallery.html and add a third photo: <img src="photo3.jpg" alt="Lake" />',
+      'Click styles.css and change gap: 10px to gap: 20px. Save both files.',
+      'Stage ONLY gallery.html: run "git add gallery.html" (not "git add .")',
+      'Run "git status" — gallery.html should be green, styles.css should be red',
+      'Commit just the staged file: git commit -m "feat: add lake photo"',
+    ],
     successChecks: [
       { type: 'commitCount', min: 2 },
       { type: 'fileContent', path: 'gallery.html', contains: 'photo3' },
@@ -136,6 +164,15 @@ export const scenarios: Scenario[] = [
     preScript: ['git init', 'git add .', 'git commit -m "chore: initial server config"'],
     allowedCommands: ['status', 'diff', 'add', 'commit', 'log', 'restore'],
     goalDescription: 'Your task: 1) In config.json, change the version to "1.1.0" and set debug to true. 2) Run "git diff" to review your changes line-by-line. 3) Stage and commit. Then 4) Update the port to 8080, run "git diff" again to see the new change, stage and commit separately.',
+    conceptSummary: 'The "git diff" command shows you exactly what changed in your files — line by line. Lines starting with "-" were removed, lines with "+" were added. Diffs are the foundation of code review and understanding what you\'re about to commit.',
+    instructions: [
+      'Open config.json and change version to "1.1.0" and debug to true. Save.',
+      'Run "git diff" to see exactly which lines changed (- old, + new)',
+      'Stage and commit: git add . then git commit -m "feat: bump version, enable debug"',
+      'Now change port from 3000 to 8080 in config.json. Save.',
+      'Run "git diff" again — only the port change shows this time',
+      'Stage and commit separately: git add . then git commit -m "chore: change port to 8080"',
+    ],
     successChecks: [
       { type: 'commitCount', min: 3 },
       { type: 'fileContent', path: 'config.json', contains: '"1.1.0"' },
@@ -166,6 +203,14 @@ export const scenarios: Scenario[] = [
     preScript: ['git init', 'git add .', 'git commit -m "docs: basic pancake recipe"'],
     allowedCommands: ['status', 'branch', 'switch', 'add', 'commit', 'merge', 'log', 'diff'],
     goalDescription: 'Create a branch called "feature/toppings", add a Toppings section to recipe.md, commit it, switch back to main, and merge the branch in.',
+    conceptSummary: 'Branches are parallel timelines for your code. You create a branch to work on a feature without affecting the main code. When the feature is ready, you merge it back. Branches are lightweight in Git — just pointers to commits — so use them freely!',
+    instructions: [
+      'Create and switch to a new branch: git switch -c feature/toppings',
+      'Edit recipe.md — add a "## Toppings" section with some items at the bottom',
+      'Stage and commit your changes on the feature branch',
+      'Switch back to main: git switch main (notice toppings disappear!)',
+      'Merge the feature in: git merge feature/toppings',
+    ],
     successChecks: [
       { type: 'branchExists', name: 'feature/toppings' },
       { type: 'commitCount', min: 3 },
@@ -205,6 +250,15 @@ export const scenarios: Scenario[] = [
     ],
     allowedCommands: ['status', 'merge', 'add', 'commit', 'diff', 'log'],
     goalDescription: 'Merge feature/chef-alice into main. You\'ll hit a conflict because both chefs changed the menu! Open menu.txt, pick the dishes you want (remove the <<<, ===, >>> markers), then stage and commit.',
+    conceptSummary: 'Merge conflicts happen when two branches change the same lines. Git can\'t decide which version to keep, so it marks the conflict and asks you to resolve it. Conflicts are NOT errors — they\'re just Git asking for your help. Stay calm and edit the file!',
+    instructions: [
+      'Run "git merge feature/chef-alice" — this will trigger a conflict',
+      'Run "git status" to see which files are conflicted',
+      'Click menu.txt — look for <<<<<<< HEAD and >>>>>>> markers',
+      'Edit the file: pick the dishes you want, delete ALL conflict markers',
+      'Save, then stage: git add menu.txt',
+      'Finish the merge: git commit -m "fix: resolve menu conflict"',
+    ],
     successChecks: [
       { type: 'commitCount', min: 4 },
       { type: 'currentBranch', name: 'main' },
@@ -236,6 +290,15 @@ export const scenarios: Scenario[] = [
     preScript: ['git init', 'git add .', 'git commit -m "chore: initial settings"'],
     allowedCommands: ['status', 'diff', 'add', 'restore', 'commit'],
     goalDescription: 'Practice the undo cycle: 1) Edit settings.yaml (change theme to dark), 2) Stage it with git add, 3) Unstage it with git restore --staged settings.yaml, 4) Discard the change with git restore settings.yaml. End with a clean working tree.',
+    conceptSummary: 'Everyone makes mistakes — Git gives you safe undo commands. "git restore" discards working directory changes, and "git restore --staged" unstages files without losing your edits. These are the safe undo tools every developer should know.',
+    instructions: [
+      'Open settings.yaml and change "theme: light" to "theme: dark". Save.',
+      'Run "git status" to see it\'s modified (red)',
+      'Stage it: git add settings.yaml (now it\'s green/staged)',
+      'Unstage it: git restore --staged settings.yaml (back to red)',
+      'Discard the change: git restore settings.yaml',
+      'Run "git status" — working tree should be clean!',
+    ],
     successChecks: [{ type: 'clean', value: true }],
     hints: [
       { text: 'Open settings.yaml and change "theme: light" to "theme: dark". Save.', delay: 5 },
@@ -264,6 +327,15 @@ export const scenarios: Scenario[] = [
     preScript: ['git init'] as PreScriptStep[],
     allowedCommands: ['status', 'add', 'commit', 'diff', 'log'],
     goalDescription: 'Create a .gitignore file that excludes node_modules/ and .env, then stage and commit only the safe files (app.js and .gitignore).',
+    conceptSummary: 'The .gitignore file tells Git which files to completely ignore — they won\'t show up in status or get staged. This is essential for keeping secrets (API keys), dependencies (node_modules), and generated files out of your repository.',
+    instructions: [
+      'Run "git status" to see ALL files — including dangerous ones like .env',
+      'Click the "+ New File" button and create a file called ".gitignore"',
+      'In .gitignore, type: node_modules/  and .env (one per line). Save.',
+      'Run "git status" again — node_modules/ and .env should be gone!',
+      'Run "git add ." — only safe files get staged',
+      'Commit: git commit -m "chore: add gitignore, init project"',
+    ],
     successChecks: [
       { type: 'commitCount' as const, min: 1 },
       { type: 'fileExists' as const, path: '.gitignore' },
@@ -297,6 +369,15 @@ export const scenarios: Scenario[] = [
     ] as PreScriptStep[],
     allowedCommands: ['status', 'add', 'commit', 'stash', 'switch', 'branch', 'diff', 'log'],
     goalDescription: '1) Edit app.js to add a farewell function (don\'t commit yet). 2) Stash your changes. 3) Create and switch to "hotfix/typo", fix the greeting, commit. 4) Switch back to main. 5) Pop your stash to get your work back.',
+    conceptSummary: 'Git stash is your "save slot" for work-in-progress. When you need to switch branches but have uncommitted changes, stash saves them temporarily and gives you a clean working directory. Pop the stash later to get your changes back.',
+    instructions: [
+      'Edit app.js — add a farewell function at the bottom. Save but do NOT commit.',
+      'Run "git stash" — your changes are saved and the file reverts to the last commit',
+      'Create a hotfix branch: git switch -c hotfix/typo',
+      'Edit app.js — change "Hello" to "Hi". Stage and commit the fix.',
+      'Switch back: git switch main',
+      'Bring your work back: git stash pop — the farewell function reappears!',
+    ],
     successChecks: [
       { type: 'branchExists' as const, name: 'hotfix/typo' },
       { type: 'commitCount' as const, min: 2 },
@@ -340,6 +421,14 @@ export const scenarios: Scenario[] = [
     ] as PreScriptStep[],
     allowedCommands: ['log', 'branch', 'switch', 'status', 'add', 'commit', 'diff'],
     goalDescription: 'Use "git log --oneline" to explore the commit history. Then create a new branch called "feature/v1.3" from the current state and add a v1.3 section to notes.md with at least one bullet point. Commit your changes.',
+    conceptSummary: 'Git log is your time machine — it shows every commit ever made, with who made it and when. The --oneline flag gives a compact view. Good commit messages make the log a useful project diary; bad ones make it useless.',
+    instructions: [
+      'Run "git log --oneline" to see all commits in a compact format',
+      'Read the history: notice how each commit tells a story of the project',
+      'Create a feature branch: git switch -c feature/v1.3',
+      'Edit notes.md — add a "## v1.3" section with at least one bullet point',
+      'Stage and commit: git add . then git commit -m "docs: add v1.3 release notes"',
+    ],
     successChecks: [
       { type: 'branchExists' as const, name: 'feature/v1.3' },
       { type: 'fileContent' as const, path: 'notes.md', contains: 'v1.3' },
