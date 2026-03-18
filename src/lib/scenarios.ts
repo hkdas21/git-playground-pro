@@ -164,6 +164,15 @@ export const scenarios: Scenario[] = [
     preScript: ['git init', 'git add .', 'git commit -m "chore: initial server config"'],
     allowedCommands: ['status', 'diff', 'add', 'commit', 'log', 'restore'],
     goalDescription: 'Your task: 1) In config.json, change the version to "1.1.0" and set debug to true. 2) Run "git diff" to review your changes line-by-line. 3) Stage and commit. Then 4) Update the port to 8080, run "git diff" again to see the new change, stage and commit separately.',
+    conceptSummary: 'The "git diff" command shows you exactly what changed in your files — line by line. Lines starting with "-" were removed, lines with "+" were added. Diffs are the foundation of code review and understanding what you\'re about to commit.',
+    instructions: [
+      'Open config.json and change version to "1.1.0" and debug to true. Save.',
+      'Run "git diff" to see exactly which lines changed (- old, + new)',
+      'Stage and commit: git add . then git commit -m "feat: bump version, enable debug"',
+      'Now change port from 3000 to 8080 in config.json. Save.',
+      'Run "git diff" again — only the port change shows this time',
+      'Stage and commit separately: git add . then git commit -m "chore: change port to 8080"',
+    ],
     successChecks: [
       { type: 'commitCount', min: 3 },
       { type: 'fileContent', path: 'config.json', contains: '"1.1.0"' },
