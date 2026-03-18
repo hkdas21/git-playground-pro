@@ -6,7 +6,7 @@ import { scenarios, checkSuccess } from '@/lib/scenarios';
 import { Terminal, TerminalEntry } from './Terminal';
 import { CommitGraph } from './CommitGraph';
 import { Pipeline } from './Pipeline';
-import { RotateCcw, Lightbulb, Pause, Play, Clock, Trophy } from 'lucide-react';
+import { RotateCcw, Lightbulb, Pause, Play, Clock, Trophy, FilePlus } from 'lucide-react';
 
 interface WidgetShellProps {
   scenarioId: string;
