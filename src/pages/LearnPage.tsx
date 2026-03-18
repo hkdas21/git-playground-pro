@@ -39,10 +39,29 @@ export default function LearnPage() {
           <p className="text-muted-foreground mt-1">{page.subtitle}</p>
         </div>
 
-        <div className="mb-8 space-y-3">
-          {page.content.map((p, i) => (
-            <p key={i} className="text-foreground/80 text-sm leading-relaxed">{p}</p>
-          ))}
+        <div className="mb-8 space-y-4">
+          {page.content.map((block, i) => {
+            if (block.startsWith('Steps:\n')) {
+              const lines = block.replace('Steps:\n', '').split('\n');
+              return (
+                <div key={i} className="bg-card border border-border rounded-xl p-4">
+                  <h3 className="text-xs font-bold text-terminal font-mono uppercase tracking-wider mb-3">Steps</h3>
+                  <ol className="space-y-2">
+                    {lines.map((line, j) => {
+                      const text = line.replace(/^\d+\.\s*/, '');
+                      return (
+                        <li key={j} className="flex gap-3 text-sm text-foreground/80 leading-relaxed">
+                          <span className="shrink-0 w-6 h-6 rounded-full bg-terminal/10 text-terminal font-mono text-xs flex items-center justify-center font-bold">{j + 1}</span>
+                          <span>{text}</span>
+                        </li>
+                      );
+                    })}
+                  </ol>
+                </div>
+              );
+            }
+            return <p key={i} className="text-foreground/80 text-sm leading-relaxed">{block}</p>;
+          })}
         </div>
 
         {page.widgetId && (
