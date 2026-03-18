@@ -30,6 +30,8 @@ export interface Scenario {
   hints: Hint[];
   debrief: string;
   goalDescription: string;
+  conceptSummary: string;
+  instructions: string[];
 }
 
 export const scenarios: Scenario[] = [
