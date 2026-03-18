@@ -369,6 +369,15 @@ export const scenarios: Scenario[] = [
     ] as PreScriptStep[],
     allowedCommands: ['status', 'add', 'commit', 'stash', 'switch', 'branch', 'diff', 'log'],
     goalDescription: '1) Edit app.js to add a farewell function (don\'t commit yet). 2) Stash your changes. 3) Create and switch to "hotfix/typo", fix the greeting, commit. 4) Switch back to main. 5) Pop your stash to get your work back.',
+    conceptSummary: 'Git stash is your "save slot" for work-in-progress. When you need to switch branches but have uncommitted changes, stash saves them temporarily and gives you a clean working directory. Pop the stash later to get your changes back.',
+    instructions: [
+      'Edit app.js — add a farewell function at the bottom. Save but do NOT commit.',
+      'Run "git stash" — your changes are saved and the file reverts to the last commit',
+      'Create a hotfix branch: git switch -c hotfix/typo',
+      'Edit app.js — change "Hello" to "Hi". Stage and commit the fix.',
+      'Switch back: git switch main',
+      'Bring your work back: git stash pop — the farewell function reappears!',
+    ],
     successChecks: [
       { type: 'branchExists' as const, name: 'hotfix/typo' },
       { type: 'commitCount' as const, min: 2 },
