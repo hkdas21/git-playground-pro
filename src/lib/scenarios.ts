@@ -327,6 +327,15 @@ export const scenarios: Scenario[] = [
     preScript: ['git init'] as PreScriptStep[],
     allowedCommands: ['status', 'add', 'commit', 'diff', 'log'],
     goalDescription: 'Create a .gitignore file that excludes node_modules/ and .env, then stage and commit only the safe files (app.js and .gitignore).',
+    conceptSummary: 'The .gitignore file tells Git which files to completely ignore — they won\'t show up in status or get staged. This is essential for keeping secrets (API keys), dependencies (node_modules), and generated files out of your repository.',
+    instructions: [
+      'Run "git status" to see ALL files — including dangerous ones like .env',
+      'Click the "+ New File" button and create a file called ".gitignore"',
+      'In .gitignore, type: node_modules/  and .env (one per line). Save.',
+      'Run "git status" again — node_modules/ and .env should be gone!',
+      'Run "git add ." — only safe files get staged',
+      'Commit: git commit -m "chore: add gitignore, init project"',
+    ],
     successChecks: [
       { type: 'commitCount' as const, min: 1 },
       { type: 'fileExists' as const, path: '.gitignore' },
