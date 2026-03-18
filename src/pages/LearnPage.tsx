@@ -66,7 +66,7 @@ export default function LearnPage() {
 
         {page.widgetId && (
           <div className="h-[550px] mb-8">
-            <WidgetShell scenarioId={page.widgetId} />
+            <WidgetShell scenarioId={page.widgetId} mode="learn" />
           </div>
         )}
 

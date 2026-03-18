@@ -16,6 +16,15 @@ export interface Hint {
   delay?: number;
 }
 
+export interface ChallengeVariant {
+  seedFiles: Record<string, string>;
+  preScript: PreScriptStep[];
+  goalDescription: string;
+  successChecks: SuccessCheck[];
+  hints: Hint[];
+  optimalCommands?: number; // for star rating
+}
+
 export interface Scenario {
   id: string;
   title: string;
@@ -32,6 +41,7 @@ export interface Scenario {
   goalDescription: string;
   conceptSummary: string;
   instructions: string[];
+  challengeVariant?: ChallengeVariant;
 }
 
 export const scenarios: Scenario[] = [
@@ -72,6 +82,28 @@ export const scenarios: Scenario[] = [
       { text: 'Run: git commit -m "feat: update heading to Hello Git"', delay: 85 },
     ],
     debrief: '🎉 You shipped a change through all 3 places!\n\n📂 Working Directory — your workshop where you edit files\n📦 Staging Area — the conveyor belt where you prepare changes\n🏛️ Repository — the warehouse where snapshots are stored forever\n\nThe flow is always: edit → git add → git commit.\nWatch the pipeline above — it shows exactly where your files are at each step.',
+    challengeVariant: {
+      seedFiles: {
+        'index.html': '<!DOCTYPE html>\n<html>\n<head><title>My Site</title></head>\n<body>\n  <h1>Welcome</h1>\n</body>\n</html>\n',
+        'style.css': 'body {\n  font-family: sans-serif;\n  color: #333;\n}\n',
+      },
+      preScript: ['git init', 'git add .', 'git commit -m "chore: scaffold website"',
+        { write: 'style.css', content: 'body {\n  font-family: sans-serif;\n  color: #333;\n  background: #f0f0f0;\n}\n' },
+      ],
+      goalDescription: 'Create a new file called "about.html" with some content, stage ONLY about.html (not the modified style.css), and commit it.',
+      successChecks: [
+        { type: 'fileExists', path: 'about.html' },
+        { type: 'commitCount', min: 2 },
+      ],
+      hints: [
+        { text: 'Click the "+ New File" button and name it "about.html"' },
+        { text: 'Add some HTML content to about.html and click Save' },
+        { text: 'Run "git status" — you\'ll see about.html as untracked AND style.css as modified' },
+        { text: 'Stage only about.html: git add about.html (not "git add .")' },
+        { text: 'Commit: git commit -m "feat: add about page"' },
+      ],
+      optimalCommands: 3,
+    },
   },
 
   // ── Widget 2: Commit Message Arcade ─────────────────────────────
@@ -109,9 +141,29 @@ export const scenarios: Scenario[] = [
       { text: 'Good: git commit -m "docs: mark login page done, add deploy task"\nBad: git commit -m "update file"', delay: 70 },
     ],
     debrief: '📝 Commit message best practices:\n\n✅ Use a type prefix: feat:, fix:, docs:, chore:, style:\n✅ Use imperative mood: "add feature" not "added feature"\n✅ Be specific: "fix login button alignment" not "fix stuff"\n✅ Keep the subject under 50 characters\n\nYour commit messages are your project\'s diary — make them useful!',
+    challengeVariant: {
+      seedFiles: {
+        'app.js': '// App entry point\nconst express = require("express");\nconst app = express();\n\napp.get("/", (req, res) => {\n  res.send("Welcom to our app");\n});\n\napp.listen(3000);\n',
+        'utils.js': 'function formatDate(d) {\n  return d.tostring();\n}\n\nfunction capitalize(str) {\n  return str.charAt(0).toUpperCase() + str.slice(1);\n}\n\nmodule.exports = { formatDate, capitalize };\n',
+      },
+      preScript: ['git init', 'git add .', 'git commit -m "feat: initial app with utils"'],
+      goalDescription: 'There are bugs in both files! Fix the typo in app.js ("Welcom" → "Welcome") and the bug in utils.js ("tostring" → "toString"). Make 2 separate commits with clear, specific messages for each fix.',
+      successChecks: [
+        { type: 'commitCount', min: 3 },
+        { type: 'fileContent', path: 'app.js', contains: 'Welcome' },
+        { type: 'fileContent', path: 'utils.js', contains: 'toString' },
+      ],
+      hints: [
+        { text: 'Open app.js — find the typo "Welcom" and fix it to "Welcome"' },
+        { text: 'Stage and commit just the app.js fix with a descriptive message' },
+        { text: 'Open utils.js — find "tostring" and fix it to "toString"' },
+        { text: 'Stage and commit utils.js separately with its own clear message' },
+      ],
+      optimalCommands: 6,
+    },
   },
 
-  // ── Widget 3: Status Explorer (NEW — dedicated for "Reading git status") ──
+  // ── Widget 3: Status Explorer ──
   {
     id: 'status-explorer',
     title: 'Status Explorer',
@@ -147,9 +199,35 @@ export const scenarios: Scenario[] = [
       { text: 'Commit just the staged file: git commit -m "feat: add lake photo to gallery"', delay: 70 },
     ],
     debrief: '🔍 Reading git status like a pro:\n\n🟢 Green files = staged (ready to commit)\n🔴 Red files = modified but NOT staged\n⚪ Untracked = brand new files Git doesn\'t know about\n\nKey insight: You can stage files selectively!\n"git add gallery.html" stages only that file.\n"git add ." stages everything.\n\nAlways run git status before committing to make sure you\'re committing exactly what you intend.',
+    challengeVariant: {
+      seedFiles: {
+        'index.html': '<!DOCTYPE html>\n<html><body><h1>Blog</h1></body></html>\n',
+        'post1.md': '# First Post\nHello world!\n',
+        'post2.md': '# Second Post\nLearning Git.\n',
+        'draft.md': '# Draft\nWork in progress...\n',
+      },
+      preScript: ['git init', 'git add .', 'git commit -m "feat: initial blog"',
+        { write: 'index.html', content: '<!DOCTYPE html>\n<html><body><h1>My Blog</h1></body></html>\n' },
+        { write: 'post1.md', content: '# First Post\nHello world! Updated.\n' },
+        { write: 'post2.md', content: '# Second Post\nLearning Git is fun.\n' },
+        { write: 'draft.md', content: '# Draft\nAlmost ready to publish.\n' },
+      ],
+      goalDescription: 'You have 4 modified files. Stage and commit them in 2 logical groups: 1) Commit index.html and post1.md together as "content updates", 2) Commit post2.md and draft.md together as "draft updates". Use selective staging!',
+      successChecks: [
+        { type: 'commitCount', min: 3 },
+      ],
+      hints: [
+        { text: 'Run "git status" to see all 4 modified files' },
+        { text: 'Stage the first group: git add index.html post1.md' },
+        { text: 'Commit: git commit -m "docs: update homepage and first post"' },
+        { text: 'Stage the second group: git add post2.md draft.md' },
+        { text: 'Commit: git commit -m "docs: update post2 and draft"' },
+      ],
+      optimalCommands: 6,
+    },
   },
 
-  // ── Widget 4: Diff Detective (NEW — dedicated for "Understanding Diffs") ──
+  // ── Widget 4: Diff Detective ──
   {
     id: 'diff-detective',
     title: 'Diff Detective',
@@ -187,6 +265,25 @@ export const scenarios: Scenario[] = [
       { text: 'git add . && git commit -m "chore: change port to 8080"', delay: 75 },
     ],
     debrief: '🔎 Understanding diffs:\n\n- Lines starting with "-" (red) = removed\n+ Lines starting with "+" (green) = added\n  Lines with no prefix = unchanged context\n\n"git diff" shows unstaged changes (working dir vs staging area)\n"git diff --staged" shows what you\'re about to commit\n\nDiffs are the foundation of code review — you\'ll read hundreds of them in your career!',
+    challengeVariant: {
+      seedFiles: {
+        'api.js': 'const BASE_URL = "https://api.example.com";\nconst TIMEOUT = 5000;\n\nfunction fetchUsers() {\n  return fetch(BASE_URL + "/users", { timeout: TIMEOUT });\n}\n\nfunction fetchPosts() {\n  return fetch(BASE_URL + "/pots", { timeout: TIMEOUT });\n}\n\nmodule.exports = { fetchUsers, fetchPosts };\n',
+      },
+      preScript: ['git init', 'git add .', 'git commit -m "feat: add API client"'],
+      goalDescription: 'There\'s a bug in api.js — a URL typo. Use "git diff" after editing to verify you fixed the right thing, then commit the fix. Hint: look at the endpoint paths carefully.',
+      successChecks: [
+        { type: 'commitCount', min: 2 },
+        { type: 'fileContent', path: 'api.js', contains: '/posts' },
+        { type: 'fileContent', path: 'api.js', notContains: '/pots' },
+      ],
+      hints: [
+        { text: 'Read api.js carefully — one of the URL paths has a typo' },
+        { text: 'Find "/pots" — it should be "/posts"' },
+        { text: 'Fix it, save, then run "git diff" to verify your change' },
+        { text: 'Stage and commit with a descriptive fix message' },
+      ],
+      optimalCommands: 3,
+    },
   },
 
   // ── Widget 5: Branch Maze ───────────────────────────────────────
@@ -226,6 +323,28 @@ export const scenarios: Scenario[] = [
       { text: 'Bring the feature in: git merge feature/toppings', delay: 80 },
     ],
     debrief: '🌿 Branch workflow:\n\n1. git switch -c feature/name — create & switch to a new branch\n2. Make your changes and commit them\n3. git switch main — go back to main\n4. git merge feature/name — bring changes into main\n\n💡 Key insight: When you switch branches, your files change!\nThe branch has the toppings, main doesn\'t — until you merge.\n\nBranches are lightweight in Git (just a pointer to a commit). Use them freely!',
+    challengeVariant: {
+      seedFiles: {
+        'app.js': 'console.log("Main app");\n',
+      },
+      preScript: ['git init', 'git add .', 'git commit -m "feat: init app"'],
+      goalDescription: 'Create TWO feature branches from main: "feature/header" and "feature/footer". Add a header.js file on the first branch and a footer.js file on the second branch, committing each. End on main with both branches existing.',
+      successChecks: [
+        { type: 'branchExists', name: 'feature/header' },
+        { type: 'branchExists', name: 'feature/footer' },
+        { type: 'commitCount', min: 3 },
+        { type: 'currentBranch', name: 'main' },
+      ],
+      hints: [
+        { text: 'Start: git switch -c feature/header' },
+        { text: 'Create header.js with some content, stage and commit' },
+        { text: 'Switch back to main: git switch main' },
+        { text: 'Create second branch: git switch -c feature/footer' },
+        { text: 'Create footer.js with some content, stage and commit' },
+        { text: 'Switch back to main: git switch main' },
+      ],
+      optimalCommands: 9,
+    },
   },
 
   // ── Widget 6: Merge Conflict Escape Room ────────────────────────
@@ -273,6 +392,38 @@ export const scenarios: Scenario[] = [
       { text: 'Finish the merge: git commit -m "fix: resolve menu conflict, combine best dishes"', delay: 80 },
     ],
     debrief: '🔧 Conflict resolution — step by step:\n\n1. git merge <branch> → Git marks conflicts with markers\n2. Open the conflicted file and find:\n   <<<<<<< HEAD    (your current branch\'s version)\n   =======         (divider)\n   >>>>>>> branch  (incoming branch\'s version)\n3. Edit the file: keep what you want, delete the markers\n4. git add <file> → tells Git "I resolved this"\n5. git commit → finalizes the merge\n\n🧘 Conflicts are NOT errors — they\'re just Git asking "which version do you want?" Stay calm!',
+    challengeVariant: {
+      seedFiles: {
+        'config.yaml': 'app:\n  name: MyApp\n  theme: default\n  language: en\n',
+      },
+      preScript: [
+        'git init', 'git add .', 'git commit -m "chore: initial config"',
+        'git switch -c feature/dark-mode',
+        { write: 'config.yaml', content: 'app:\n  name: MyApp\n  theme: dark\n  language: en\n  sidebar: collapsed\n' },
+        'git add .', 'git commit -m "feat: add dark mode and sidebar"',
+        'git switch main',
+        'git switch -c feature/i18n',
+        { write: 'config.yaml', content: 'app:\n  name: MyApp\n  theme: ocean\n  language: fr\n  currency: EUR\n' },
+        'git add .', 'git commit -m "feat: add French locale and ocean theme"',
+        'git switch main',
+        'git merge feature/dark-mode',
+      ] as PreScriptStep[],
+      goalDescription: 'Merge feature/i18n into main (which already has dark-mode merged). Resolve the conflict by combining the best of both: keep dark theme, French language, and include BOTH sidebar and currency settings.',
+      successChecks: [
+        { type: 'commitCount', min: 5 },
+        { type: 'currentBranch', name: 'main' },
+        { type: 'fileContent', path: 'config.yaml', notContains: '<<<<<<<' },
+        { type: 'fileContent', path: 'config.yaml', contains: 'dark' },
+        { type: 'fileContent', path: 'config.yaml', contains: 'fr' },
+      ],
+      hints: [
+        { text: 'Run: git merge feature/i18n — expect a conflict!' },
+        { text: 'Open config.yaml and find the conflict markers' },
+        { text: 'Combine both: keep theme: dark, language: fr, and include sidebar AND currency' },
+        { text: 'Remove all <<<, ===, >>> markers, save, then git add . && git commit' },
+      ],
+      optimalCommands: 3,
+    },
   },
 
   // ── Widget 7: Undo Wizard ───────────────────────────────────────
@@ -309,6 +460,32 @@ export const scenarios: Scenario[] = [
       { text: 'Run "git status" — working tree should be clean!', delay: 55 },
     ],
     debrief: '✨ Safe undo commands:\n\n🔄 git restore <file>\n   → Discards changes in working directory (reverts to staged/committed version)\n\n📤 git restore --staged <file>\n   → Unstages a file (keeps the changes in your working directory)\n\n⚠️ AVOID in beginner mode:\n   git reset --hard — destructive, can lose work\n   git rebase — rewrites history\n\nRemember: restore is safe. You can always undo your undo!',
+    challengeVariant: {
+      seedFiles: {
+        'main.js': 'console.log("Hello");\n',
+        'config.js': 'module.exports = { port: 3000 };\n',
+        'readme.md': '# Project\nA cool project.\n',
+      },
+      preScript: ['git init', 'git add .', 'git commit -m "chore: init project"',
+        { write: 'main.js', content: 'console.log("WRONG");\n' },
+        { write: 'config.js', content: 'module.exports = { port: 9999 };\n' },
+        { write: 'readme.md', content: '# Project\nUpdated readme.\n' },
+      ],
+      goalDescription: 'You accidentally edited 3 files. Stage all of them, then: 1) Unstage main.js and config.js (keep readme.md staged), 2) Restore main.js and config.js to discard changes, 3) Commit only the readme change.',
+      successChecks: [
+        { type: 'commitCount', min: 2 },
+        { type: 'fileContent', path: 'main.js', contains: 'Hello' },
+        { type: 'fileContent', path: 'config.js', contains: '3000' },
+        { type: 'fileContent', path: 'readme.md', contains: 'Updated' },
+      ],
+      hints: [
+        { text: 'Stage everything first: git add .' },
+        { text: 'Unstage the ones you don\'t want: git restore --staged main.js config.js' },
+        { text: 'Discard those changes: git restore main.js config.js' },
+        { text: 'Now commit just the readme: git commit -m "docs: update readme"' },
+      ],
+      optimalCommands: 4,
+    },
   },
 
   // ── Widget 8: Gitignore Guardian ───────────────────────────────
@@ -351,6 +528,32 @@ export const scenarios: Scenario[] = [
       { text: 'Commit: git commit -m "chore: add gitignore, init project"', delay: 65 },
     ],
     debrief: '🛡️ .gitignore protects your repo!\n\nCommon patterns to ignore:\n• node_modules/ — dependencies (reinstall with npm install)\n• .env — secrets & API keys\n• dist/ or build/ — generated files\n• .DS_Store — macOS junk\n• *.log — log files\n\n⚠️ NEVER commit secrets! Once pushed to GitHub, they\'re in the history forever.\n\nPro tip: Use gitignore.io to generate templates for any language/framework.',
+    challengeVariant: {
+      seedFiles: {
+        'index.html': '<html><body>Hello</body></html>\n',
+        'script.js': 'console.log("app");\n',
+        'debug.log': 'ERROR: something failed\nWARN: check config\n',
+        '.DS_Store': '',
+        'credentials.json': '{"api_key": "secret123"}\n',
+        'package.json': '{"name": "app"}\n',
+      },
+      preScript: ['git init'] as PreScriptStep[],
+      goalDescription: 'You have 6 files. Figure out which 3 should be ignored (they\'re dangerous or junk!), create a .gitignore for them, then stage and commit only the safe files.',
+      successChecks: [
+        { type: 'commitCount', min: 1 },
+        { type: 'fileExists', path: '.gitignore' },
+        { type: 'fileContent', path: '.gitignore', contains: 'debug.log' },
+        { type: 'fileContent', path: '.gitignore', contains: '.DS_Store' },
+        { type: 'fileContent', path: '.gitignore', contains: 'credentials' },
+      ],
+      hints: [
+        { text: 'Run "git status" — which files look dangerous or unnecessary?' },
+        { text: 'debug.log, .DS_Store, and credentials.json should NOT be committed' },
+        { text: 'Create a .gitignore file with those 3 patterns' },
+        { text: 'Stage and commit the safe files' },
+      ],
+      optimalCommands: 3,
+    },
   },
 
   // ── Widget 9: Stash & Switch ───────────────────────────────────
@@ -393,6 +596,31 @@ export const scenarios: Scenario[] = [
       { text: 'Bring your work back: git stash pop — the farewell function reappears!', delay: 80 },
     ],
     debrief: '📦 Git stash = your work-in-progress shelf!\n\n• git stash — save changes, clean working directory\n• git stash pop — re-apply the most recent stash\n• git stash list — see all stashed entries\n\nWhen to use stash:\n✅ Need to switch branches but have uncommitted work\n✅ Want to pull latest changes on a clean tree\n✅ Quick context switch for a hotfix\n\n💡 Stash is a stack (LIFO) — the most recent stash pops first.',
+    challengeVariant: {
+      seedFiles: {
+        'server.js': 'const http = require("http");\nconst server = http.createServer((req, res) => {\n  res.end("OK");\n});\nserver.listen(3000);\n',
+      },
+      preScript: [
+        'git init', 'git add .', 'git commit -m "feat: basic server"',
+        'git switch -c feature/logging',
+        { write: 'server.js', content: 'const http = require("http");\nconst server = http.createServer((req, res) => {\n  console.log(req.url);\n  res.end("OK");\n});\nserver.listen(3000);\n' },
+        'git add .', 'git commit -m "feat: add request logging"',
+        'git switch main',
+      ] as PreScriptStep[],
+      goalDescription: 'Start adding a /health endpoint to server.js (don\'t commit). Then stash it, switch to feature/logging, add a timestamp to the log line and commit. Switch back to main, pop your stash, and finish your health endpoint.',
+      successChecks: [
+        { type: 'currentBranch', name: 'main' },
+        { type: 'fileContent', path: 'server.js', contains: 'health' },
+      ],
+      hints: [
+        { text: 'Edit server.js on main — start adding a /health check route' },
+        { text: 'Stash your work: git stash' },
+        { text: 'Switch to feature/logging: git switch feature/logging' },
+        { text: 'Add a timestamp to the console.log, stage and commit' },
+        { text: 'Switch back: git switch main, then git stash pop' },
+      ],
+      optimalCommands: 7,
+    },
   },
 
   // ── Widget 10: Log Detective ───────────────────────────────────
@@ -442,6 +670,37 @@ export const scenarios: Scenario[] = [
       { text: 'Stage and commit: git add . && git commit -m "docs: add v1.3 release notes"', delay: 65 },
     ],
     debrief: '🔍 Git log is your time machine!\n\n• git log — full commit details\n• git log --oneline — compact view (hash + message)\n\nEach commit is a snapshot of your entire project at that point in time.\n\n💡 Good commit messages make log useful:\n  "docs: add v1.2 release notes" → you know exactly what changed\n  "update file" → useless in a log of 100 commits\n\nThe log + branches together let you navigate any project\'s history like a detective.',
+    challengeVariant: {
+      seedFiles: {
+        'changelog.md': '# Changelog\n',
+      },
+      preScript: [
+        'git init',
+        { write: 'changelog.md', content: '# Changelog\n' },
+        'git add .', 'git commit -m "docs: init changelog"',
+        { write: 'changelog.md', content: '# Changelog\n\n## v0.1\n- Project created\n' },
+        'git add .', 'git commit -m "docs: add v0.1"',
+        { write: 'changelog.md', content: '# Changelog\n\n## v0.1\n- Project created\n\n## v0.2\n- Added login\n' },
+        'git add .', 'git commit -m "docs: add v0.2"',
+        { write: 'changelog.md', content: '# Changelog\n\n## v0.1\n- Project created\n\n## v0.2\n- Added login\n\n## v0.3\n- Bug fixes\n' },
+        'git add .', 'git commit -m "docs: add v0.3"',
+      ] as PreScriptStep[],
+      goalDescription: 'Explore the history with "git log --oneline". Create TWO branches: "feature/v0.4" with a new changelog entry, and "hotfix/typo" with a fix. Commit on each branch and return to main.',
+      successChecks: [
+        { type: 'branchExists', name: 'feature/v0.4' },
+        { type: 'branchExists', name: 'hotfix/typo' },
+        { type: 'commitCount', min: 6 },
+        { type: 'currentBranch', name: 'main' },
+      ],
+      hints: [
+        { text: 'Run "git log --oneline" to see the history' },
+        { text: 'Create feature/v0.4: git switch -c feature/v0.4' },
+        { text: 'Add a v0.4 section to changelog.md, stage and commit' },
+        { text: 'Switch to main, then create hotfix/typo' },
+        { text: 'Make a small fix on hotfix/typo, commit, return to main' },
+      ],
+      optimalCommands: 11,
+    },
   },
 ];
 

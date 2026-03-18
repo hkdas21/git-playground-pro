@@ -100,7 +100,7 @@ export default function WidgetPage() {
         <span className="text-xs text-muted-foreground font-mono">— Playground</span>
       </div>
       <div className="flex-1 p-2 min-h-0">
-        <WidgetShell scenarioId={widgetId} showTrainerControls />
+        <WidgetShell scenarioId={widgetId} showTrainerControls mode="play" />
       </div>
     </div>
   );
