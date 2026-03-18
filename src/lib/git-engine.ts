@@ -394,6 +394,7 @@ export class GitEngine {
       case 'switch': return this.switchCmd(subArgs);
       case 'merge': return this.mergeCmd(subArgs);
       case 'restore': return this.restoreCmd(subArgs);
+      case 'stash': return this.stashCmd(subArgs);
       default: return { success: false, output: `git: '${sub}' is not a git command.`, type: 'error' };
     }
   }
